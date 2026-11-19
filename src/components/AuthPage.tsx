@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, updateProfile } from 'firebase/auth'
 import { doc, serverTimestamp, setDoc } from 'firebase/firestore'
 import { ArrowRight, BookOpenCheck, LockKeyhole } from 'lucide-react'
-import { auth, db } from '../lib/firebase'
+import { getFirebaseServices } from '../lib/firebase'
 
 function readableError(error: unknown) {
   const code = (error as { code?: string })?.code
@@ -48,6 +48,7 @@ export default function AuthPage() {
 
     setBusy(true)
     try {
+      const { auth, db } = getFirebaseServices()
       if (register) {
         const credential = await createUserWithEmailAndPassword(auth, email.trim(), password)
         await updateProfile(credential.user, { displayName: name.trim() })
