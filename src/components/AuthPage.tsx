@@ -15,8 +15,12 @@ function readableError(error: unknown) {
     'auth/too-many-requests': 'Too many attempts. Please wait a little and try again.',
     'auth/network-request-failed': 'Network error. Check your connection and try again.',
     'auth/operation-not-allowed': 'Email/password sign-in is not enabled in Firebase Authentication yet.',
+    'auth/unauthorized-domain': 'This website domain is not authorised in Firebase Authentication. Add the exact domain shown in your browser address bar under Authentication > Settings > Authorised domains.',
+    'auth/app-not-authorized': 'This Firebase app is not authorised to use Authentication. Check the Firebase project and web app configuration.',
   }
-  return (code && messages[code]) || 'We could not complete that request. Please check your details and try again.'
+  if (code && messages[code]) return messages[code]
+  const detail = error instanceof Error ? error.message : String(error)
+  return code ? `Firebase error (${code}): ${detail}` : `Request failed: ${detail}`
 }
 
 export default function AuthPage() {
