@@ -5,6 +5,7 @@ import { getFirebaseServices } from './lib/firebase'
 import { Link, NavLink, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 import AuthPage from './components/AuthPage'
 import ProtectedRoute from './components/ProtectedRoute'
+import TeacherProfile from './components/TeacherProfile'
 import { ArrowRight, ArrowUpRight, BookOpen, BookOpenCheck, Building2, Check, CheckCircle2, ClipboardList, Download, FileText, Filter, GraduationCap, Library, LockKeyhole, Menu, Search, ShieldCheck, Sparkles, Users, X } from 'lucide-react'
 
 type Resource = { id:string; title:string; subject:string; className:string; term:string; curriculum:string; state?:string; kind:string; price:number; description:string; topics:string[]; featured?:boolean }
@@ -29,6 +30,57 @@ function Pricing(){return <Shell><main className="page"><div className="wrap nar
 function Schools(){return <Shell><main className="page"><div className="wrap split"><div><span className="overline">FOR SCHOOL MANAGEMENT</span><h1>Bring teaching preparation <em>together.</em></h1><p className="lead">Give teachers and academic coordinators a clearer way to find the resources they need across classes and subjects.</p><ul><li><CheckCircle2/> Browse materials across JSS and SS classes</li><li><CheckCircle2/> Plan resource needs by subject and term</li><li><CheckCircle2/> Explore coordinated school purchasing</li></ul><a className="button primary" href="mailto:schools@lessonnest.com?subject=LessonNest%20school%20enquiry">Make a school enquiry <ArrowUpRight/></a></div><div className="school-card"><Building2 size={42}/><h2>A shared starting point for better preparation.</h2><p>School accounts, member access and bulk purchasing will be activated after secure account and payment integration.</p><span className="demo-tag">SCHOOL PORTAL — COMING SOON</span></div></div></main></Shell>}
 function About(){return <Shell><main className="page"><div className="wrap narrow"><div className="page-intro"><span className="overline">ABOUT LESSONNEST</span><h1>Made for the people <em>who make learning happen.</em></h1><p>LessonNest is being built to make quality teaching resources easier to discover and use across Nigerian secondary schools.</p></div><div className="about-card"><GraduationCap size={32}/><h2>Our purpose</h2><p>Teachers do important work. Finding schemes of work, preparing detailed notes and creating assessments should not have to start from scratch every term. LessonNest brings these resources into one clear, organised place.</p><div>Created and developed by <b>abdulsalamdevhub</b>.</div></div></div></main></Shell>}
 function Auth(){const register=useLocation().pathname==='/register';return <Shell><main className="auth-page"><div className="auth-card"><span className="auth-icon"><BookOpenCheck/></span><span className="overline">{register?'CREATE YOUR ACCOUNT':'WELCOME BACK'}</span><h1>{register?'Join LessonNest':'Sign in to LessonNest'}</h1><p>{register?'Create an account to prepare, purchase and organise your teaching resources.':'Access your LessonNest account and resource library.'}</p><div className="notice"><LockKeyhole/><span>Account services are not connected yet. Firebase configuration is required before registration or sign-in can be enabled. This preview does not collect credentials.</span></div><label>Email address<input type="email" placeholder="you@school.com" disabled/></label><label>Password<input type="password" placeholder="At least 8 characters" disabled/></label><button className="button primary full" disabled>{register?'Create account':'Sign in'}</button><p className="auth-switch">{register?'Already have an account?':'New to LessonNest?'} <Link to={register?'/login':'/register'}>{register?'Sign in':'Create an account'}</Link></p></div></main></Shell>}
-function Workspace({role}:{role:'teacher'|'school'|'admin'}){const title=role==='admin'?'Admin workspace':role==='school'?'School workspace':'Your teaching library';const {user}=useAuth();const navigate=useNavigate();const [signOutError,setSignOutError]=useState('');const handleSignOut=async()=>{setSignOutError('');try{const {auth}=getFirebaseServices();await signOut(auth);navigate('/login',{replace:true});}catch{setSignOutError('We could not sign you out. Please try again.');}};return <Shell><main className="page"><div className="wrap workspace"><span className="overline">LESSONNEST WORKSPACE</span><h1>{title}</h1>{role==='teacher'&&<section className="dashboard-account"><div className="dashboard-avatar">{(user?.displayName||user?.email||'T').charAt(0).toUpperCase()}</div><div className="dashboard-identity"><span>SIGNED IN AS</span><strong>{user?.displayName||'Teacher'}</strong><small>{user?.email}</small></div><button className="button outline dashboard-signout" onClick={handleSignOut}>Sign out</button></section>}{signOutError&&<p className="auth-feedback error" role="alert">{signOutError}</p>}<p>Your account is connected. Purchased resources and activity will appear here as those features are added.</p><div className="notice"><ShieldCheck/><span>Your sign-in is protected. Resource purchases, live account activity and role-based school/admin access are still being developed.</span></div><div className="workspace-grid"><div><BookOpen/><b>My resources</b><span>Purchased files will appear here.</span></div><div><FileText/><b>Activity</b><span>Your verified account activity.</span></div><div><Users/><b>{role==='admin'?'User management':role==='school'?'School members':'Account'}</b><span>{role==='admin'?'Manage resources and authorised users.':role==='school'?'Manage school access and members.':'Manage your profile and preferences.'}</span></div></div>{role==='admin'&&<p className="admin-note">Admin access must be enforced by server-verified roles before this workspace is enabled.</p>}</div></main></Shell>}
+function Workspace({role}:{role:'teacher'|'school'|'admin'}) {
+  const title = role === 'admin' ? 'Admin workspace' : role === 'school' ? 'School workspace' : 'Your teaching library'
+  const { user } = useAuth()
+  const navigate = useNavigate()
+  const [teacherName, setTeacherName] = useState(user?.displayName || '')
+  const [signOutError, setSignOutError] = useState('')
+
+  const handleSignOut = async () => {
+    setSignOutError('')
+    try {
+      const { auth } = getFirebaseServices()
+      await signOut(auth)
+      navigate('/login', { replace: true })
+    } catch {
+      setSignOutError('We could not sign you out. Please try again.')
+    }
+  }
+
+  return (
+    <Shell>
+      <main className="page">
+        <div className="wrap workspace">
+          <span className="overline">LESSONNEST WORKSPACE</span>
+          <h1>{title}</h1>
+          {role === 'teacher' && (
+            <>
+              <section className="dashboard-account">
+                <div className="dashboard-avatar">{(teacherName || user?.email || 'T').charAt(0).toUpperCase()}</div>
+                <div className="dashboard-identity">
+                  <span>SIGNED IN AS</span>
+                  <strong>{teacherName || 'Teacher'}</strong>
+                  <small>{user?.email}</small>
+                </div>
+                <button className="button outline dashboard-signout" onClick={handleSignOut}>Sign out</button>
+              </section>
+              <TeacherProfile onNameSaved={setTeacherName}/>
+            </>
+          )}
+          {signOutError && <p className="auth-feedback error" role="alert">{signOutError}</p>}
+          <p>Your account is connected. Purchased resources and activity will appear here as those features are added.</p>
+          <div className="notice"><ShieldCheck/><span>Your sign-in is protected. Resource purchases, live account activity and role-based school/admin access are still being developed.</span></div>
+          <div className="workspace-grid">
+            <div><BookOpen/><b>My resources</b><span>Purchased files will appear here.</span></div>
+            <div><FileText/><b>Activity</b><span>Your verified account activity.</span></div>
+            <div><Users/><b>{role === 'admin' ? 'User management' : role === 'school' ? 'School members' : 'Account'}</b><span>{role === 'admin' ? 'Manage resources and authorised users.' : role === 'school' ? 'Manage school access and members.' : 'Manage your profile and preferences.'}</span></div>
+          </div>
+          {role === 'admin' && <p className="admin-note">Admin access must be enforced by server-verified roles before this workspace is enabled.</p>}
+        </div>
+      </main>
+    </Shell>
+  )
+}
 function NotFound(){return <Shell><div className="wrap not-found"><span className="overline">404 · PAGE NOT FOUND</span><h1>This page seems to have wandered off.</h1><p>Let's get you back to the resources and tools you came for.</p><Link className="button primary" to="/">Return home <ArrowRight/></Link></div></Shell>}
 export default function App(){return <Routes><Route path="/" element={<Home/>}/><Route path="/resources" element={<LibraryPage/>}/><Route path="/resources/:id" element={<Detail/>}/><Route path="/pricing" element={<Pricing/>}/><Route path="/schools" element={<Schools/>}/><Route path="/about" element={<About/>}/><Route path="/login" element={<AuthPage/>}/><Route path="/register" element={<AuthPage/>}/><Route path="/dashboard" element={<ProtectedRoute><Workspace role="teacher"/></ProtectedRoute>}/><Route path="/school" element={<Workspace role="school"/>}/><Route path="/admin" element={<Workspace role="admin"/>}/><Route path="*" element={<NotFound/>}/></Routes>}
