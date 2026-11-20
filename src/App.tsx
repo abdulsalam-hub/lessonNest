@@ -5,6 +5,7 @@ import { getFirebaseServices } from './lib/firebase'
 import { Link, NavLink, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 import AuthPage from './components/AuthPage'
 import ProtectedRoute from './components/ProtectedRoute'
+import AdminRoute from './components/AdminRoute'
 import TeacherProfile from './components/TeacherProfile'
 import { ArrowRight, ArrowUpRight, BookOpen, BookOpenCheck, Building2, Check, CheckCircle2, ClipboardList, Download, FileText, Filter, GraduationCap, Library, LockKeyhole, Menu, Search, ShieldCheck, Sparkles, Users, X } from 'lucide-react'
 
@@ -83,4 +84,4 @@ function Workspace({role}:{role:'teacher'|'school'|'admin'}) {
   )
 }
 function NotFound(){return <Shell><div className="wrap not-found"><span className="overline">404 · PAGE NOT FOUND</span><h1>This page seems to have wandered off.</h1><p>Let's get you back to the resources and tools you came for.</p><Link className="button primary" to="/">Return home <ArrowRight/></Link></div></Shell>}
-export default function App(){return <Routes><Route path="/" element={<Home/>}/><Route path="/resources" element={<LibraryPage/>}/><Route path="/resources/:id" element={<Detail/>}/><Route path="/pricing" element={<Pricing/>}/><Route path="/schools" element={<Schools/>}/><Route path="/about" element={<About/>}/><Route path="/login" element={<AuthPage/>}/><Route path="/register" element={<AuthPage/>}/><Route path="/dashboard" element={<ProtectedRoute><Workspace role="teacher"/></ProtectedRoute>}/><Route path="/school" element={<Workspace role="school"/>}/><Route path="/admin" element={<Workspace role="admin"/>}/><Route path="*" element={<NotFound/>}/></Routes>}
+export default function App(){return <Routes><Route path="/" element={<Home/>}/><Route path="/resources" element={<LibraryPage/>}/><Route path="/resources/:id" element={<Detail/>}/><Route path="/pricing" element={<Pricing/>}/><Route path="/schools" element={<Schools/>}/><Route path="/about" element={<About/>}/><Route path="/login" element={<AuthPage/>}/><Route path="/register" element={<AuthPage/>}/><Route path="/dashboard" element={<ProtectedRoute><Workspace role="teacher"/></ProtectedRoute>}/><Route path="/school" element={<Workspace role="school"/>}/><Route path="/admin" element={<AdminRoute><Workspace role="admin"/></AdminRoute>}/><Route path="*" element={<NotFound/>}/></Routes>}
