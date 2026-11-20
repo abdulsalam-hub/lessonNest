@@ -16,3 +16,25 @@
 .dashboard-identity small{font-size:10px;color:var(--muted);overflow-wrap:anywhere}
 .dashboard-signout{flex:none;padding:10px 14px}
 @media(max-width:480px){.dashboard-account{gap:10px;padding:12px}.dashboard-avatar{width:38px;height:38px}.dashboard-signout{padding:9px 10px;font-size:11px}}
+
+
+.teacher-profile{margin:22px 0 26px;padding:22px;border:1px solid var(--line);border-radius:14px;background:#fff}
+.teacher-profile-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:20px}
+.teacher-profile-heading h2{font:700 19px Manrope,sans-serif;color:var(--ink);margin:7px 0 5px}
+.teacher-profile-heading p{font-size:11px;color:var(--muted);line-height:1.6;margin:0}
+.teacher-profile-icon{width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:11px;background:#edf4ff;color:var(--blue)}
+.teacher-profile-form>label,.teacher-profile-field>span{display:block;font-size:10px;font-weight:700;color:#52627a;margin-bottom:8px}
+.teacher-profile-edit{display:flex;gap:10px}
+.teacher-profile-edit input{flex:1;min-width:0;border:1px solid #dfe6f0;border-radius:8px;padding:11px 12px;font:inherit;font-size:12px;color:var(--ink);outline:none}
+.teacher-profile-edit input:focus{border-color:#8aaff9;box-shadow:0 0 0 3px #4775d414}
+.teacher-profile-edit .button{display:inline-flex;align-items:center;justify-content:center;gap:7px;white-space:nowrap}
+.teacher-profile-field{padding:17px 0 14px;margin-top:14px;border-bottom:1px solid #eef1f6}
+.teacher-profile-field strong{display:block;font-size:12px;color:var(--ink);overflow-wrap:anywhere}
+.teacher-profile-field small{display:block;margin-top:5px;font-size:10px;color:var(--muted)}
+.teacher-verification{display:flex;align-items:center;justify-content:space-between;gap:14px;padding-top:17px}
+.teacher-verification-copy{display:flex;align-items:flex-start;gap:10px;min-width:0}
+.teacher-verification-copy>svg{flex:none;color:#4775bd}
+.teacher-verification-copy strong{display:block;font-size:11px;color:var(--ink)}
+.teacher-verification-copy small{display:block;margin-top:4px;font-size:10px;line-height:1.5;color:var(--muted)}
+.teacher-verification .button{flex:none;padding:9px 12px;font-size:10px}
+@media(max-width:520px){.teacher-profile{padding:16px}.teacher-profile-edit{flex-direction:column}.teacher-profile-edit .button{width:100%}.teacher-verification{align-items:flex-start;flex-direction:column}.teacher-verification .button{width:100%}}
