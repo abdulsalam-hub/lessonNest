@@ -38,3 +38,26 @@
 .teacher-verification-copy small{display:block;margin-top:4px;font-size:10px;line-height:1.5;color:var(--muted)}
 .teacher-verification .button{flex:none;padding:9px 12px;font-size:10px}
 @media(max-width:520px){.teacher-profile{padding:16px}.teacher-profile-edit{flex-direction:column}.teacher-profile-edit .button{width:100%}.teacher-verification{align-items:flex-start;flex-direction:column}.teacher-verification .button{width:100%}}
+
+
+/* Administrator overview */
+.admin-overview{margin:24px 0 34px}
+.admin-overview-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:20px}
+.admin-overview-head h2{font:800 22px Manrope,sans-serif;color:var(--ink);letter-spacing:-.5px;margin:7px 0 5px}
+.admin-overview-head p{font-size:11px;color:var(--muted);line-height:1.6;margin:0}
+.admin-refresh{display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.admin-stat-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.admin-stat-card{min-width:0;padding:19px;border:1px solid var(--line);border-radius:13px;background:#fff;display:flex;flex-direction:column;align-items:flex-start;gap:9px}
+.admin-stat-icon{width:37px;height:37px;border-radius:10px;background:#edf4ff;color:var(--blue);display:grid;place-items:center}
+.admin-stat-label{font-size:10px;font-weight:700;color:#687992}
+.admin-stat-card strong{font:800 27px Manrope,sans-serif;color:var(--ink);letter-spacing:-.7px;overflow-wrap:anywhere}
+.admin-stat-card small{font-size:9px;color:#8793a5;line-height:1.5}
+.admin-overview-note{display:flex;align-items:flex-start;gap:12px;padding:16px;border:1px solid #dce8fb;border-radius:12px;background:#f5f8ff;color:#3564bd;margin-top:18px}
+.admin-overview-note>svg{flex:none;margin-top:2px}
+.admin-overview-note div{display:flex;flex-direction:column;gap:5px}
+.admin-overview-note b{font:700 11px Manrope,sans-serif;color:#294d83}
+.admin-overview-note span{font-size:10px;line-height:1.6;color:#627797;overflow-wrap:anywhere}
+.admin-data-note{font-size:10px;color:var(--muted);line-height:1.7;margin-top:14px}
+.admin-spin{animation:admin-spin .9s linear infinite}
+@keyframes admin-spin{to{transform:rotate(360deg)}}
+@media(max-width:700px){.admin-stat-grid{grid-template-columns:1fr}.admin-stat-card{padding:16px}.admin-overview-head{align-items:flex-start}.admin-overview-head h2{font-size:19px}}
