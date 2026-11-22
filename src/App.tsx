@@ -92,7 +92,7 @@ function Workspace({role}:{role:'teacher'|'school'|'admin'}) {
               <div className="workspace-grid">
             <div><BookOpen/><b>My resources</b><span>Purchased files will appear here.</span></div>
             <div><FileText/><b>Activity</b><span>Your verified account activity.</span></div>
-            <div><Users/><b>{role === 'admin' ? 'User management' : role === 'school' ? 'School members' : 'Account'}</b><span>{role === 'admin' ? 'Manage resources and authorised users.' : role === 'school' ? 'Manage school access and members.' : 'Manage your profile and preferences.'}</span></div>
+            <div><Users/><b>Account</b><span>Manage your profile and preferences.</span></div>
               </div>
             </>
           )}
