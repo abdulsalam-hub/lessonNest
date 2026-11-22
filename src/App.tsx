@@ -8,6 +8,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import AdminRoute from './components/AdminRoute'
 import TeacherProfile from './components/TeacherProfile'
 import AdminOverview from './components/AdminOverview'
+import AdminResources from './components/AdminResources'
 import { ArrowRight, ArrowUpRight, BookOpen, BookOpenCheck, Building2, Check, CheckCircle2, ClipboardList, Download, FileText, Filter, GraduationCap, Library, LockKeyhole, Menu, Search, ShieldCheck, Sparkles, Users, X } from 'lucide-react'
 
 type Resource = { id:string; title:string; subject:string; className:string; term:string; curriculum:string; state?:string; kind:string; price:number; description:string; topics:string[]; featured?:boolean }
@@ -68,6 +69,7 @@ function Workspace({role}:{role:'teacher'|'school'|'admin'}) {
                 <button className="button outline dashboard-signout" onClick={handleSignOut}>Sign out</button>
               </section>
               <AdminOverview />
+              <AdminResources />
             </>
           )}
           {role === 'teacher' && (
