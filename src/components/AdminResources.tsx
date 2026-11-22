@@ -127,7 +127,7 @@ export default function AdminResources() {
     setSaving(true)
     try {
       const { db } = getFirebaseServices()
-      const uploaded = file ? await uploadFile(file) : {}
+      const uploaded: { fileUrl?: string; fileName?: string } = file ? await uploadFile(file) : {}
       const data = {
         title: form.title.trim(),
         subject: form.subject.trim(),
