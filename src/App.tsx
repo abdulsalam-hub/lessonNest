@@ -7,6 +7,7 @@ import AuthPage from './components/AuthPage'
 import ProtectedRoute from './components/ProtectedRoute'
 import AdminRoute from './components/AdminRoute'
 import TeacherProfile from './components/TeacherProfile'
+import AdminOverview from './components/AdminOverview'
 import { ArrowRight, ArrowUpRight, BookOpen, BookOpenCheck, Building2, Check, CheckCircle2, ClipboardList, Download, FileText, Filter, GraduationCap, Library, LockKeyhole, Menu, Search, ShieldCheck, Sparkles, Users, X } from 'lucide-react'
 
 type Resource = { id:string; title:string; subject:string; className:string; term:string; curriculum:string; state?:string; kind:string; price:number; description:string; topics:string[]; featured?:boolean }
@@ -55,6 +56,20 @@ function Workspace({role}:{role:'teacher'|'school'|'admin'}) {
         <div className="wrap workspace">
           <span className="overline">LESSONNEST WORKSPACE</span>
           <h1>{title}</h1>
+          {role === 'admin' && (
+            <>
+              <section className="dashboard-account">
+                <div className="dashboard-avatar">A</div>
+                <div className="dashboard-identity">
+                  <span>ADMINISTRATOR</span>
+                  <strong>{user?.displayName || 'LessonNest Admin'}</strong>
+                  <small>{user?.email}</small>
+                </div>
+                <button className="button outline dashboard-signout" onClick={handleSignOut}>Sign out</button>
+              </section>
+              <AdminOverview />
+            </>
+          )}
           {role === 'teacher' && (
             <>
               <section className="dashboard-account">
@@ -70,14 +85,17 @@ function Workspace({role}:{role:'teacher'|'school'|'admin'}) {
             </>
           )}
           {signOutError && <p className="auth-feedback error" role="alert">{signOutError}</p>}
-          <p>Your account is connected. Purchased resources and activity will appear here as those features are added.</p>
-          <div className="notice"><ShieldCheck/><span>Your sign-in is protected. Resource purchases, live account activity and role-based school/admin access are still being developed.</span></div>
-          <div className="workspace-grid">
+          {role === 'teacher' && (
+            <>
+              <p>Your account is connected. Purchased resources and activity will appear here as those features are added.</p>
+              <div className="notice"><ShieldCheck/><span>Your sign-in is protected. Resource purchases and live account activity are still being developed.</span></div>
+              <div className="workspace-grid">
             <div><BookOpen/><b>My resources</b><span>Purchased files will appear here.</span></div>
             <div><FileText/><b>Activity</b><span>Your verified account activity.</span></div>
             <div><Users/><b>{role === 'admin' ? 'User management' : role === 'school' ? 'School members' : 'Account'}</b><span>{role === 'admin' ? 'Manage resources and authorised users.' : role === 'school' ? 'Manage school access and members.' : 'Manage your profile and preferences.'}</span></div>
-          </div>
-          {role === 'admin' && <p className="admin-note">Admin access must be enforced by server-verified roles before this workspace is enabled.</p>}
+              </div>
+            </>
+          )}
         </div>
       </main>
     </Shell>
