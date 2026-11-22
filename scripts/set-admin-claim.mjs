@@ -9,11 +9,8 @@ if (!targetUid) {
   process.exit(1)
 }
 
-if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
-  console.error('Set GOOGLE_APPLICATION_CREDENTIALS to the path of your local service-account JSON file.')
-  process.exit(1)
-}
-
+// Uses Application Default Credentials. In Google Cloud Shell, these are
+// provided by the authenticated Google account; no service-account JSON is needed.
 const app = initializeApp({
   credential: applicationDefault(),
 })
