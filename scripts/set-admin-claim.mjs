@@ -13,6 +13,7 @@ if (!targetUid) {
 // provided by the authenticated Google account; no service-account JSON is needed.
 const app = initializeApp({
   credential: applicationDefault(),
+  projectId: 'lessonnest-234',
 })
 
 try {
