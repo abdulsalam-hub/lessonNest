@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword, updateProfile } from 'firebase/auth'
+import { createUserWithEmailAndPassword, getIdTokenResult, sendEmailVerification, signInWithEmailAndPassword, updateProfile } from 'firebase/auth'
 import { doc, serverTimestamp, setDoc } from 'firebase/firestore'
 import { ArrowRight, BookOpenCheck, LockKeyhole } from 'lucide-react'
 import { getFirebaseServices } from '../lib/firebase'
@@ -66,8 +66,16 @@ export default function AuthPage() {
         setPassword('')
       } else {
         const credential = await signInWithEmailAndPassword(auth, email.trim(), password)
+        // Refresh the token so recently assigned Firebase custom claims are recognised.
+        const token = await getIdTokenResult(credential.user, true)
+        const isAdmin = token.claims.admin === true
         const next = new URLSearchParams(window.location.search).get('next')
-        navigate(next && next.startsWith('/') ? next : '/dashboard', { replace: true })
+        const destination = next && next.startsWith('/')
+          ? next
+          : isAdmin
+            ? '/admin'
+            : '/dashboard'
+        navigate(destination, { replace: true })
         return
       }
     } catch (err) {
