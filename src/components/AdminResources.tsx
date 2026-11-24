@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import {
-  addDoc, collection, doc, getDocs, serverTimestamp, updateDoc,
+  addDoc, collection, deleteDoc, doc, getDocs, serverTimestamp, setDoc, updateDoc,
 } from 'firebase/firestore'
 import { getFirebaseServices } from '../lib/firebase'
 import { Plus, Save, UploadCloud, RefreshCw, Pencil, Eye, EyeOff, FileText } from 'lucide-react'
@@ -56,6 +56,28 @@ export default function AdminResources() {
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
 
+  const syncPublicResource = async (db: ReturnType<typeof getFirebaseServices>['db'], item: ResourceRecord) => {
+    const publicRef = doc(db, 'publicResources', item.id)
+    if (item.status !== 'published') {
+      await deleteDoc(publicRef)
+      return
+    }
+    // Deliberately publish catalogue metadata only. Never copy fileUrl or fileName.
+    await setDoc(publicRef, {
+      title: item.title,
+      subject: item.subject,
+      className: item.className,
+      term: item.term,
+      curriculum: item.curriculum,
+      state: item.state || '',
+      kind: item.kind,
+      price: item.price,
+      description: item.description,
+      topics: item.topics || [],
+      updatedAt: serverTimestamp(),
+    })
+  }
+
   const loadResources = useCallback(async () => {
     setLoading(true)
     setError('')
@@ -67,6 +89,7 @@ export default function AdminResources() {
         ...entry.data(),
       } as ResourceRecord))
       rows.sort((a, b) => (b.createdAt?.toMillis?.() ?? 0) - (a.createdAt?.toMillis?.() ?? 0))
+      await Promise.all(rows.filter((row) => row.status === 'published').map((row) => syncPublicResource(db, row)))
       setItems(rows)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not load resources.')
@@ -144,6 +167,8 @@ export default function AdminResources() {
       }
       if (editingId) {
         await updateDoc(doc(db, 'resources', editingId), data)
+        const updatedItem = { ...items.find((item) => item.id === editingId)!, ...data } as ResourceRecord
+        if (updatedItem.status === 'published') await syncPublicResource(db, updatedItem)
         setMessage('Resource details updated.')
       } else {
         await addDoc(collection(db, 'resources'), {
@@ -191,6 +216,7 @@ export default function AdminResources() {
         status,
         updatedAt: serverTimestamp(),
       })
+      await syncPublicResource(db, { ...item, status })
       setMessage(`“${item.title}” is now ${status}.`)
       await loadResources()
     } catch (err) {
