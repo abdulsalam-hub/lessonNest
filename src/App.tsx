@@ -27,8 +27,8 @@ function usePublishedResources() {
         const { db } = getFirebaseServices()
         const snapshot = await getDocs(collection(db, 'publicResources'))
         const rows = snapshot.docs.map((entry) => ({
-          id: entry.id,
           ...entry.data(),
+          id: entry.id,
         } as Resource))
         rows.sort((a, b) => a.title.localeCompare(b.title))
         if (active) setResources(rows)
