@@ -85,12 +85,14 @@ export default function AdminResources() {
       const { db } = getFirebaseServices()
       const snapshot = await getDocs(collection(db, 'resources'))
       const rows = snapshot.docs.map((entry) => ({
-        id: entry.id,
         ...entry.data(),
+        id: entry.id,
       } as ResourceRecord))
       rows.sort((a, b) => (b.createdAt?.toMillis?.() ?? 0) - (a.createdAt?.toMillis?.() ?? 0))
-      await Promise.all(rows.filter((row) => row.status === 'published').map((row) => syncPublicResource(db, row)))
+      const publishedRows = rows.filter((row) => row.status === 'published')
+      await Promise.all(publishedRows.map((row) => syncPublicResource(db, row)))
       setItems(rows)
+      setMessage(`Loaded ${rows.length} resources; ${publishedRows.length} published resource(s) synced to the public catalogue.`)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Could not load resources.')
     } finally {
