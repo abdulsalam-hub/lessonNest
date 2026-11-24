@@ -1,14 +1,14 @@
-import { useMemo, useState, type ReactNode } from 'react'
+import { lazy, Suspense, useMemo, useState, type ReactNode } from 'react'
 import { signOut } from 'firebase/auth'
 import { useAuth } from './context/AuthContext'
 import { getFirebaseServices } from './lib/firebase'
 import { Link, Navigate, NavLink, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
-import AuthPage from './components/AuthPage'
+const AuthPage = lazy(() => import('./components/AuthPage'))
 import ProtectedRoute from './components/ProtectedRoute'
 import AdminRoute from './components/AdminRoute'
-import TeacherProfile from './components/TeacherProfile'
-import AdminOverview from './components/AdminOverview'
-import AdminResources from './components/AdminResources'
+const TeacherProfile = lazy(() => import('./components/TeacherProfile'))
+const AdminOverview = lazy(() => import('./components/AdminOverview'))
+const AdminResources = lazy(() => import('./components/AdminResources'))
 import { ArrowRight, ArrowUpRight, BookOpen, BookOpenCheck, Building2, Check, CheckCircle2, ClipboardList, FileText, Filter, GraduationCap, Library, LockKeyhole, Menu, Search, ShieldCheck, Sparkles, Users, X } from 'lucide-react'
 
 type Resource = { id:string; title:string; subject:string; className:string; term:string; curriculum:string; state?:string; kind:string; price:number; description:string; topics:string[]; featured?:boolean }
@@ -32,6 +32,10 @@ function Detail(){const {id}=useParams();const r=resources.find(x=>x.id===id);co
 function Pricing(){return <Shell><main className="page"><div className="wrap narrow"><div className="page-intro centered"><span className="overline">SIMPLE, TRANSPARENT PRICING</span><h1>Resources that respect <em>your budget.</em></h1><p>Start with the materials you need. School purchasing options will support larger resource needs.</p></div><div className="pricing-grid"><div className="price-card"><span className="overline">INDIVIDUAL</span><h2>Pay per resource</h2><p>Choose a subject and term pack that fits your classroom needs.</p><div className="price-range">From <b>₦1,200</b></div><ul><li><Check/> Browse resource previews</li><li><Check/> Purchase selected resources</li><li><Check/> Personal library (planned)</li></ul><Link className="button primary full" to="/resources">Browse resources</Link></div><div className="price-card featured"><span className="overline">SCHOOL ACCESS</span><h2>Plan for your school</h2><p>Discuss a resource package for multiple classes and subjects.</p><div className="price-range"><b>Let's talk</b></div><ul><li><Check/> Multi-subject resource planning</li><li><Check/> School access options</li><li><Check/> Coordinated purchasing (planned)</li></ul><Link className="button dark full" to="/schools">Explore school options</Link></div></div><p className="disclaimer">Prices shown are illustrative examples for the demo catalogue, not live offers. Final prices will be set by the administrator.</p></div></main></Shell>}
 function Schools(){return <Shell><main className="page"><div className="wrap split"><div><span className="overline">FOR SCHOOL MANAGEMENT</span><h1>Bring teaching preparation <em>together.</em></h1><p className="lead">Give teachers and academic coordinators a clearer way to find the resources they need across classes and subjects.</p><ul><li><CheckCircle2/> Browse materials across JSS and SS classes</li><li><CheckCircle2/> Plan resource needs by subject and term</li><li><CheckCircle2/> Explore coordinated school purchasing</li></ul><a className="button primary" href="mailto:schools@lessonnest.com?subject=LessonNest%20school%20enquiry">Make a school enquiry <ArrowUpRight/></a></div><div className="school-card"><Building2 size={42}/><h2>A shared starting point for better preparation.</h2><p>School accounts, member access and bulk purchasing will be activated after secure account and payment integration.</p><span className="demo-tag">SCHOOL PORTAL — COMING SOON</span></div></div></main></Shell>}
 function About(){return <Shell><main className="page"><div className="wrap narrow"><div className="page-intro"><span className="overline">ABOUT LESSONNEST</span><h1>Made for the people <em>who make learning happen.</em></h1><p>LessonNest is being built to make quality teaching resources easier to discover and use across Nigerian secondary schools.</p></div><div className="about-card"><GraduationCap size={32}/><h2>Our purpose</h2><p>Teachers do important work. Finding schemes of work, preparing detailed notes and creating assessments should not have to start from scratch every term. LessonNest brings these resources into one clear, organised place.</p><div>Created and developed by <b>abdulsalamdevhub</b>.</div></div></div></main></Shell>}
+function LoadingPanel({ label = 'Loading…' }: { label?: string }) {
+  return <div className="wrap page" role="status" aria-live="polite"><p>{label}</p></div>
+}
+
 function Workspace({role}:{role:'teacher'|'admin'}) {
   const title = role === 'admin' ? 'Admin workspace' : 'Your teaching library'
   const { user } = useAuth()
@@ -67,8 +71,10 @@ function Workspace({role}:{role:'teacher'|'admin'}) {
                 </div>
                 <button className="button outline dashboard-signout" onClick={handleSignOut}>Sign out</button>
               </section>
-              <AdminOverview />
-              <AdminResources />
+              <Suspense fallback={<LoadingPanel label="Loading admin dashboard…" />}>
+                <AdminOverview />
+                <AdminResources />
+              </Suspense>
             </>
           )}
           {role === 'teacher' && (
@@ -82,7 +88,9 @@ function Workspace({role}:{role:'teacher'|'admin'}) {
                 </div>
                 <button className="button outline dashboard-signout" onClick={handleSignOut}>Sign out</button>
               </section>
-              <TeacherProfile onNameSaved={setTeacherName}/>
+              <Suspense fallback={<LoadingPanel label="Loading your profile…" />}>
+                <TeacherProfile onNameSaved={setTeacherName}/>
+              </Suspense>
             </>
           )}
           {signOutError && <p className="auth-feedback error" role="alert">{signOutError}</p>}
@@ -103,4 +111,4 @@ function Workspace({role}:{role:'teacher'|'admin'}) {
   )
 }
 function NotFound(){return <Shell><div className="wrap not-found"><span className="overline">404 · PAGE NOT FOUND</span><h1>This page seems to have wandered off.</h1><p>Let's get you back to the resources and tools you came for.</p><Link className="button primary" to="/">Return home <ArrowRight/></Link></div></Shell>}
-export default function App(){return <Routes><Route path="/" element={<Home/>}/><Route path="/resources" element={<LibraryPage/>}/><Route path="/resources/:id" element={<Detail/>}/><Route path="/pricing" element={<Pricing/>}/><Route path="/schools" element={<Schools/>}/><Route path="/about" element={<About/>}/><Route path="/login" element={<AuthPage/>}/><Route path="/register" element={<AuthPage/>}/><Route path="/dashboard" element={<ProtectedRoute><Workspace role="teacher"/></ProtectedRoute>}/><Route path="/school" element={<Navigate to="/schools" replace/>}/><Route path="/admin" element={<AdminRoute><Workspace role="admin"/></AdminRoute>}/><Route path="*" element={<NotFound/>}/></Routes>}
+export default function App(){return <Routes><Route path="/" element={<Home/>}/><Route path="/resources" element={<LibraryPage/>}/><Route path="/resources/:id" element={<Detail/>}/><Route path="/pricing" element={<Pricing/>}/><Route path="/schools" element={<Schools/>}/><Route path="/about" element={<About/>}/><Route path="/login" element={<Suspense fallback={<LoadingPanel label="Loading sign in…" />}><AuthPage/></Suspense>}/><Route path="/register" element={<Suspense fallback={<LoadingPanel label="Loading registration…" />}><AuthPage/></Suspense>}/><Route path="/dashboard" element={<ProtectedRoute><Workspace role="teacher"/></ProtectedRoute>}/><Route path="/school" element={<Navigate to="/schools" replace/>}/><Route path="/admin" element={<AdminRoute><Workspace role="admin"/></AdminRoute>}/><Route path="*" element={<NotFound/>}/></Routes>}
