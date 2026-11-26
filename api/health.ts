@@ -1,4 +1,4 @@
-import { getFirebaseAdminAuth } from '../server/firebaseAdmin'
+import { getFirebaseAdminAuth } from '../server/firebaseAdmin.js'
 
 export default function handler(req: any, res: any) {
   if (req.method !== 'GET') {
