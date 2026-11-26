@@ -1,4 +1,5 @@
 import { getFirebaseAdminAuth } from '../server/firebaseAdmin.js'
+import type { Auth, DecodedIdToken } from 'firebase-admin/auth'
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'POST') {
@@ -22,7 +23,7 @@ export default async function handler(req: any, res: any) {
     })
   }
 
-  let adminAuth
+  let adminAuth: Auth
 
   try {
     adminAuth = getFirebaseAdminAuth()
@@ -33,7 +34,7 @@ export default async function handler(req: any, res: any) {
     })
   }
 
-  let decodedToken
+  let decodedToken: DecodedIdToken
 
   try {
     decodedToken = await adminAuth.verifyIdToken(match[1], true)
